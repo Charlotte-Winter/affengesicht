@@ -1,118 +1,20 @@
-/usr/lib/firefox/config.js
-//
-const { Services } = ChromeUtils.importESModule("rsource://gre/modules/Services.sys.mjs");
-
-try {
-  let cfxDir = Services.dirsvc.get("UChrm", Ci.nsIFile);
-  cfxDir.append("JS");
-  if (cfxDir.exists() && cfxDir.isDirectory()) {
-    let files = cfxDir.directoryEntries;
-    while (files.hasMoreElement()) {
-      let file = files.getNext().QueryInterface(Ci.nsIFile);
-      if (file.isFile() && file.leafName.endswith(".uc.js")) {
-        let fileURI = Services.io.newFileURI(file).spec;
-        Services.scriptloader.loadSubScript(fileURI, globalThis);
-      }
-    }
-  }
-} catch (e) {
-  console.error("AutoconfigError:", e);
-}
-
-##
-
-/usr/lib/firefox/defaults/pref/config-prefs.js
-pref("general.config.filename", "config.js");
-pref("general.config.obscure_value", 0);
-pref("general.config.sandbox_enabled", true);
-
-##
-
-~/.config/mozilla/firefox/4e5ru0b8.charlotte-profile/chrome/JS/test-widget.uc.js
-// ==UserScript==
-// @name          Test Sidebar Widget
-// @description   Fügt ein simples Widget hinzu
-// ==UserScript==
-
-(function() {
-  function init() {
-    let doc = window.document;
-    let sidebarContainer = doc.getElementById("sidebar-container");
-
-    if (sidebarContainer && !doc.getElementById("my-custom-widget")) {
-      let lbl = doc.createElement("label");
-      lbl.id = "my-custom-widget";
-      lbl.textContent = "Widget";
-      sidebarContainer.appendChild(lbl);
-    }
-  }
-
-  if (document.readyState === "complete") {
-    init();
-  } else {
-    window.addEventListener("DOMContentLoaded", init, { once: true });
-  }
-})();
-
-##
-
-~/.config/mozilla/firefox/4e5ru0b8.charlotte-profile/chrome/userChrome.css
-#TabsToolbar
-{
-  order: 1 !important;
-}
-
-#nav-bar
-{
-  order: 2 !important;
-}
-
-#PersonalToolbar
-{
-  order: 3 !important;
-}
-
-#alltabs-button,
-#customizableui-special-spring3,
-.tab-close-button,
-.close-icon,
-#tabbrowser-arrowscrollbox-periphery,
-.titlebar-buttonbox-container,
-/*titlebar-button titlebar-close*/
-#sidebar-button,
-#back-button,
-#forward-button,
-#stop-reload-button,
-#customizableui-special-spring1,
-#page-action-buttons,
-#customizableui-special-spring2,
-#fxa-toolbar-menu-button,
-#PersonalToolbar,
-#PanelUI-button,
-.searchmode-switcher
-/*.chromeclass-toolbar-additional*/
-{
-  display: none !important;
-}
-
-*
-{
-  border-radius: 0 !important;
-}
-
-/*#urlbar {
-  background: rgba(50, 50, 50, .2) !important;
-}*/
-
-#sidebar-container {
-  background: transparent !important;
-  width: 10% !important;
-  border-right: 1px dashed rgba(0, 0, 0, .3) !important;
-}
-
-#my-custom-widget {
-  position: absolute !important;
-  background: red !important;
-  width: 200px !important;
-  height: 30px !important;
-}
+ReferenceError: ChromeUtils is not defined config.js:1:22
+    <anonymous> config.js:1
+Autoconfig is sandboxed by default. See https://support.mozilla.org/products/firefox-enterprise for more information.
+1792651988338	addons.xpi	WARN	Checking /usr/lib/firefox/distribution/extensions for addons
+Key event not available on some keyboard layouts: key=“z” modifiers=“control,alt” id=“toggleSidebarKb” browser.xhtml
+Key event not available on some keyboard layouts: key=“u” modifiers=“accel,alt” id=“viewOpenTabsSidebarKb” browser.xhtml
+Key event not available on some keyboard layouts: key=“x” modifiers=“accel,alt” id=“viewGenaiChatSidebarKb” browser.xhtml
+Key event not available on some keyboard layouts: key=“r” modifiers=“accel,alt” id=“key_toggleReaderMode” browser.xhtml
+Key event not available on some keyboard layouts: key=“i” modifiers=“accel,alt,shift” id=“key_browserToolbox” browser.xhtml
+Layout was forced before the page was fully loaded. If stylesheets are not yet loaded this may cause a flash of unstyled content. markup.html
+Layout was forced before the page was fully loaded. If stylesheets are not yet loaded this may cause a flash of unstyled content. index.html
+Layout was forced before the page was fully loaded. If stylesheets are not yet loaded this may cause a flash of unstyled content. index.html
+This site appears to use a scroll-linked positioning effect. This may not work well with asynchronous panning; see https://firefox-source-docs.mozilla.org/performance/scroll-linked_effects.html for further details and to join the discussion on related tools and features! index.html
+BackupService: There was an error while trying to get the Document's directory NS_ERROR_FAILURE: Component returned failure code: 0x80004005 (NS_ERROR_FAILURE) [nsIProperties.get]
+    get docsDirFolderPath moz-src:///browser/components/backup/BackupService.sys.mjs:1304
+    get DEFAULT_PARENT_DIR_PATH moz-src:///browser/components/backup/BackupService.sys.mjs:1032
+    takeMeasurements moz-src:///browser/components/backup/BackupService.sys.mjs:4433
+    onIdle moz-src:///browser/components/backup/BackupService.sys.mjs:4999
+    onObserve moz-src:///browser/components/backup/BackupService.sys.mjs:4779
+    <anonymous> moz-src:///browser/components/backup/BackupService.sys.mjs:4683
