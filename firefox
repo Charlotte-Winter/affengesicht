@@ -1,38 +1,39 @@
 //
 try {
-  let { Services } = Components.utils.import("resource://gre/modules/Services.jsm", {});
+    const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
-  function loadUCJS() {
-    try {
-      let cfxDir = Services.dirsvc.get("UChrm", Components.interfaces.nsIFile);
-      cfxDir.append("JS");
-      
-      if (cfxDir.exists() && cfxDir.isDirectory()) {
-        let files = cfxDir.directoryEntries;
-        while (files.hasMoreElements()) {
-          let file = files.getNext().QueryInterface(Components.interfaces.nsIFile);
-          if (file.isFile() && file.leafName.endsWith(".uc.js")) {
-            let fileURI = Services.io.newFileURI(file).spec;
-            Services.scriptloader.loadSubScript(fileURI, globalThis);
-          }
-        }
-      }
-    } catch (err) {
-      Components.utils.reportError(err);
+    function handleWindow(win) {
+        win.addEventListener("DOMContentLoaded", () => {
+            if (win.location.href === "chrome://browser/content/browser.xhtml") {
+                let doc = win.document;
+                let navBar = doc.getElementById("nav-bar");
+                // Prüfen, ob das Widget nicht doppelt eingefügt wird
+                if (navBar && !doc.getElementById("my-custom-widget")) {
+                    let lbl = doc.createElement("label");
+                    lbl.id = "my-custom-widget";
+                    lbl.textContent = "Widget";
+                    lbl.style.color = "red";
+                    lbl.style.fontWeight = "bold";
+                    lbl.style.padding = "0 8px";
+                    navBar.appendChild(lbl);
+                }
+            }
+        }, { once: true });
     }
-  }
 
-  Services.obs.addObserver(function(subject, topic) {
-    if (topic === "chrome-document-global-created") {
-      let win = subject;
-      win.addEventListener("DOMContentLoaded", function() {
-        if (win.location.href === "chrome://browser/content/browser.xhtml") {
-          loadUCJS();
+    // Auf neue Firefox-Fenster lauschen
+    Services.ww.registerNotification({
+        observe: function(subject, topic, data) {
+            if (topic === "domwindowopened") {
+                handleWindow(subject);
+            }
         }
-      }, { once: true });
-    }
-  }, "chrome-document-global-created");
+    });
 
+    let windows = Services.wm.getEnumerator("navigator:browser");
+    while (windows.hasMoreElements()) {
+        handleWindow(windows.getNext());
+    }
 } catch (e) {
-  Components.utils.reportError(e);
+    Cu.reportError(e);
 }
