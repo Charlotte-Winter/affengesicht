@@ -1,0 +1,133 @@
+~/.config/mozilla/firefox/4e5ru0b8.charlotte-profile/user.js
+user_pref("toolkit.legacyUserProfileCustomizations.stylesheets", true);
+user_pref("layout.css.backdrop-filter.enabled", true);
+user_pref("sidebar.verticalTabs", true);
+
+user_pref("general.config.filename", "config.js");
+user_pref("general.config.abscure_value", 0);
+
+## datei ende ##
+
+~/.config/mozilla/firefox/4e5ru0b8.charlotte-profile/chrome/userChrome.css
+#TabsToolbar
+{
+  order: 1 !important;
+}
+
+#nav-bar
+{
+  order: 2 !important;
+}
+
+#PersonalToolbar
+{
+  order: 3 !important;
+}
+
+#alltabs-button,
+#customizableui-special-spring3,
+.tab-close-button,
+.close-icon,
+#tabbrowser-arrowscrollbox-periphery,
+.titlebar-buttonbox-container,
+/*titlebar-button titlebar-close*/
+#sidebar-button,
+#back-button,
+#forward-button,
+#stop-reload-button,
+#customizableui-special-spring1,
+#page-action-buttons,
+#customizableui-special-spring2,
+#fxa-toolbar-menu-button,
+#PersonalToolbar,
+#PanelUI-button,
+.searchmode-switcher
+/*.chromeclass-toolbar-additional*/
+{
+  display: none !important;
+}
+
+*
+{
+  border-radius: 0 !important;
+}
+
+/*#urlbar {
+  background: rgba(50, 50, 50, .2) !important;
+}*/
+
+#sidebar-container {
+  background: transparent !important;
+  width: 10% !important;
+  border-right: 1px dashed rgba(0, 0, 0, .3) !important;
+}
+
+#native-clock-widget,
+#native-net-widget {
+  position: absolute !important;
+  background: red !important;
+}
+
+## datei ende ##
+
+~/.config/mozilla/firefox/4e5ru0b8.charlotte-profile/chrome/custom_stats.js
+(function() {
+  let navBar = document.getElementById("nav-bar");
+  let urlbarContainer = document.getElementById("urlbar-container");
+  if (!navBar || !urlbarContainer) return;
+
+  let clockWidget = document.createElement("toolbaritem");
+  clockWidget.id = "native-clock-widget";
+
+  let clockLabel = document.createElement("span");
+  clockWidget.appendCHild(clockLabel);
+
+  urlbarContainer.parentNode.insertBefore(clockWidget, urlbarContainer);
+
+  function updateClock() {
+    let now = new Date();
+    clockLabel.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit'});
+  }
+
+  setInterval(updateClock, 1000);
+  updateClock();
+
+  let netLabel = document.createElement("toolbaritem");
+  netWidget.id = "native-net-widget";
+
+  let netLabel = document.createElement("span");
+  netWidget.appendCHild(netLabel);
+
+  urlbarContainer.parentNode.insertBefore(netWidget, urlbarContainer.nextSibling);
+
+  let lastBytes = 0;
+  let lastTime = performance.now();
+
+  function updateNetSpeed() {
+    let entries = performance.getEntriesByType("resource");
+    let totalBytes = 0;
+
+    for (let entry of entries) {
+      if (entry.tranferSize) totalBytes += entry.transferSize;
+    }
+
+    let currentTime = performance.now();
+    let timeDiff = (currentTime - lastTime) / 1000;
+    if (timeDiff > 0 && lastBytes > 0) {
+      let speedBps = (totalBytes - lastBytes) / timeDiff;
+      if (speedBps < 0) speedBps = 0;
+
+      let speedKbps = (speedBps / 1024).toFixed(1);
+      netLabel.textContent = `down ${speedkbps} KB/s`;
+    } else {
+      netLabel.textContent = `down 0.0 KB/s`;
+    }
+
+    lastBytes = totalBytes;
+    lastTime = currentTime;
+  }
+
+  setInterval(updateNetSpeed, 1000);
+})();
+
+## datei ende ##
