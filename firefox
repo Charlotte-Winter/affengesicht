@@ -1,3 +1,29 @@
+/usr/lib/firefox/config.js
+try {
+  Components.utils.import("resource://gre/modules/Services.jsm");
+  Services.obs.addObserver(function(aSubject, aTopic) {
+    if (aTopic === "chrome-document-loaded") {
+      let win = aSubject;
+      win.addEventListener("DOMContentLoaded", function() {
+       try {
+        let file = Services.dirsvc.get("ProfD", Ci.nsIFile);
+        file.append("chrome");
+        file.append("custom_stats.js");
+        if (file.exists()) {
+          Services.scriptloader.loadSubScript("file://" + file.path, win);
+        }
+       } catch (ex) {
+       Components.utils.reportError(ex);
+       }
+      }, {once: true });
+    }
+  }, "chrome-document-loaded", false);
+} catch (e) {
+  Components.utils.reportError(e);
+}
+
+## datei ende ##
+
 ~/.config/mozilla/firefox/4e5ru0b8.charlotte-profile/user.js
 user_pref("toolkit.legacyUserProfileCustomizations.stylesheets", true);
 user_pref("layout.css.backdrop-filter.enabled", true);
@@ -5,7 +31,6 @@ user_pref("sidebar.verticalTabs", true);
 
 user_pref("general.config.filename", "config.js");
 user_pref("general.config.obscure_value", 0);
-~/.config/mozilla/firefox/4e5ru0b8.charlotte-profile
 
 ## datei ende ##
 
@@ -35,7 +60,7 @@ user_pref("general.config.obscure_value", 0);
   netWidget.id = "native-net-widget";
 
   let netLabel = document.createElement("span");
-  netWidget.appendCHild(netLabel);
+  netWidget.appendChild(netLabel);
 
   urlbarContainer.parentNode.insertBefore(netWidget, urlbarContainer.nextSibling);
 
@@ -68,5 +93,3 @@ user_pref("general.config.obscure_value", 0);
 
   setInterval(updateNetSpeed, 1000);
 })();
-
-## datei ende ##
