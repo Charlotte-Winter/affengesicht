@@ -1,20 +1,38 @@
-ReferenceError: ChromeUtils is not defined config.js:1:22
-    <anonymous> config.js:1
-Autoconfig is sandboxed by default. See https://support.mozilla.org/products/firefox-enterprise for more information.
-1792651988338	addons.xpi	WARN	Checking /usr/lib/firefox/distribution/extensions for addons
-Key event not available on some keyboard layouts: key=“z” modifiers=“control,alt” id=“toggleSidebarKb” browser.xhtml
-Key event not available on some keyboard layouts: key=“u” modifiers=“accel,alt” id=“viewOpenTabsSidebarKb” browser.xhtml
-Key event not available on some keyboard layouts: key=“x” modifiers=“accel,alt” id=“viewGenaiChatSidebarKb” browser.xhtml
-Key event not available on some keyboard layouts: key=“r” modifiers=“accel,alt” id=“key_toggleReaderMode” browser.xhtml
-Key event not available on some keyboard layouts: key=“i” modifiers=“accel,alt,shift” id=“key_browserToolbox” browser.xhtml
-Layout was forced before the page was fully loaded. If stylesheets are not yet loaded this may cause a flash of unstyled content. markup.html
-Layout was forced before the page was fully loaded. If stylesheets are not yet loaded this may cause a flash of unstyled content. index.html
-Layout was forced before the page was fully loaded. If stylesheets are not yet loaded this may cause a flash of unstyled content. index.html
-This site appears to use a scroll-linked positioning effect. This may not work well with asynchronous panning; see https://firefox-source-docs.mozilla.org/performance/scroll-linked_effects.html for further details and to join the discussion on related tools and features! index.html
-BackupService: There was an error while trying to get the Document's directory NS_ERROR_FAILURE: Component returned failure code: 0x80004005 (NS_ERROR_FAILURE) [nsIProperties.get]
-    get docsDirFolderPath moz-src:///browser/components/backup/BackupService.sys.mjs:1304
-    get DEFAULT_PARENT_DIR_PATH moz-src:///browser/components/backup/BackupService.sys.mjs:1032
-    takeMeasurements moz-src:///browser/components/backup/BackupService.sys.mjs:4433
-    onIdle moz-src:///browser/components/backup/BackupService.sys.mjs:4999
-    onObserve moz-src:///browser/components/backup/BackupService.sys.mjs:4779
-    <anonymous> moz-src:///browser/components/backup/BackupService.sys.mjs:4683
+//
+try {
+  let { Services } = Components.utils.import("resource://gre/modules/Services.jsm", {});
+
+  function loadUCJS() {
+    try {
+      let cfxDir = Services.dirsvc.get("UChrm", Components.interfaces.nsIFile);
+      cfxDir.append("JS");
+      
+      if (cfxDir.exists() && cfxDir.isDirectory()) {
+        let files = cfxDir.directoryEntries;
+        while (files.hasMoreElements()) {
+          let file = files.getNext().QueryInterface(Components.interfaces.nsIFile);
+          if (file.isFile() && file.leafName.endsWith(".uc.js")) {
+            let fileURI = Services.io.newFileURI(file).spec;
+            Services.scriptloader.loadSubScript(fileURI, globalThis);
+          }
+        }
+      }
+    } catch (err) {
+      Components.utils.reportError(err);
+    }
+  }
+
+  Services.obs.addObserver(function(subject, topic) {
+    if (topic === "chrome-document-global-created") {
+      let win = subject;
+      win.addEventListener("DOMContentLoaded", function() {
+        if (win.location.href === "chrome://browser/content/browser.xhtml") {
+          loadUCJS();
+        }
+      }, { once: true });
+    }
+  }, "chrome-document-global-created");
+
+} catch (e) {
+  Components.utils.reportError(e);
+}
