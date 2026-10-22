@@ -1,95 +1,118 @@
 /usr/lib/firefox/config.js
+//
+const { Services } = ChromeUtils.importESModule("rsource://gre/modules/Services.sys.mjs");
+
 try {
-  Components.utils.import("resource://gre/modules/Services.jsm");
-  Services.obs.addObserver(function(aSubject, aTopic) {
-    if (aTopic === "chrome-document-loaded") {
-      let win = aSubject;
-      win.addEventListener("DOMContentLoaded", function() {
-       try {
-        let file = Services.dirsvc.get("ProfD", Ci.nsIFile);
-        file.append("chrome");
-        file.append("custom_stats.js");
-        if (file.exists()) {
-          Services.scriptloader.loadSubScript("file://" + file.path, win);
-        }
-       } catch (ex) {
-       Components.utils.reportError(ex);
-       }
-      }, {once: true });
+  let cfxDir = Services.dirsvc.get("UChrm", Ci.nsIFile);
+  cfxDir.append("JS");
+  if (cfxDir.exists() && cfxDir.isDirectory()) {
+    let files = cfxDir.directoryEntries;
+    while (files.hasMoreElement()) {
+      let file = files.getNext().QueryInterface(Ci.nsIFile);
+      if (file.isFile() && file.leafName.endswith(".uc.js")) {
+        let fileURI = Services.io.newFileURI(file).spec;
+        Services.scriptloader.loadSubScript(fileURI, globalThis);
+      }
     }
-  }, "chrome-document-loaded", false);
+  }
 } catch (e) {
-  Components.utils.reportError(e);
+  console.error("AutoconfigError:", e);
 }
 
-## datei ende ##
+##
 
-~/.config/mozilla/firefox/4e5ru0b8.charlotte-profile/user.js
-user_pref("toolkit.legacyUserProfileCustomizations.stylesheets", true);
-user_pref("layout.css.backdrop-filter.enabled", true);
-user_pref("sidebar.verticalTabs", true);
+/usr/lib/firefox/defaults/pref/config-prefs.js
+pref("general.config.filename", "config.js");
+pref("general.config.obscure_value", 0);
+pref("general.config.sandbox_enabled", true);
 
-user_pref("general.config.filename", "config.js");
-user_pref("general.config.obscure_value", 0);
+##
 
-## datei ende ##
+~/.config/mozilla/firefox/4e5ru0b8.charlotte-profile/chrome/JS/test-widget.uc.js
+// ==UserScript==
+// @name          Test Sidebar Widget
+// @description   Fügt ein simples Widget hinzu
+// ==UserScript==
 
-~/.config/mozilla/firefox/4e5ru0b8.charlotte-profile/chrome/custom_stats.js
 (function() {
-  let navBar = document.getElementById("nav-bar");
-  let urlbarContainer = document.getElementById("urlbar-container");
-  if (!navBar || !urlbarContainer) return;
+  function init() {
+    let doc = window.document;
+    let sidebarContainer = doc.getElementById("sidebar-container");
 
-  let clockWidget = document.createElement("toolbaritem");
-  clockWidget.id = "native-clock-widget";
-
-  let clockLabel = document.createElement("span");
-  clockWidget.appendChild(clockLabel);
-
-  urlbarContainer.parentNode.insertBefore(clockWidget, urlbarContainer);
-
-  function updateClock() {
-    let now = new Date();
-    clockLabel.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit'});
+    if (sidebarContainer && !doc.getElementById("my-custom-widget")) {
+      let lbl = doc.createElement("label");
+      lbl.id = "my-custom-widget";
+      lbl.textContent = "Widget";
+      sidebarContainer.appendChild(lbl);
+    }
   }
 
-  setInterval(updateClock, 1000);
-  updateClock();
-
-  let netWidget = document.createElement("toolbaritem");
-  netWidget.id = "native-net-widget";
-
-  let netLabel = document.createElement("span");
-  netWidget.appendChild(netLabel);
-
-  urlbarContainer.parentNode.insertBefore(netWidget, urlbarContainer.nextSibling);
-
-  let lastBytes = 0;
-  let lastTime = performance.now();
-
-  function updateNetSpeed() {
-    let entries = performance.getEntriesByType("resource");
-    let totalBytes = 0;
-
-    for (let entry of entries) {
-      if (entry.transferSize) totalBytes += entry.transferSize;
-    }
-
-    let currentTime = performance.now();
-    let timeDiff = (currentTime - lastTime) / 1000;
-    if (timeDiff > 0 && lastBytes > 0) {
-      let speedBps = (totalBytes - lastBytes) / timeDiff;
-      if (speedBps < 0) speedBps = 0;
-
-      let speedKbps = (speedBps / 1024).toFixed(1);
-      netLabel.textContent = `down ${speedKbps} KB/s`;
-    } else {
-      netLabel.textContent = `down 0.0 KB/s`;
-    }
-
-    lastBytes = totalBytes;
-    lastTime = currentTime;
+  if (document.readyState === "complete") {
+    init();
+  } else {
+    window.addEventListener("DOMContentLoaded", init, { once: true });
   }
-
-  setInterval(updateNetSpeed, 1000);
 })();
+
+##
+
+~/.config/mozilla/firefox/4e5ru0b8.charlotte-profile/chrome/userChrome.css
+#TabsToolbar
+{
+  order: 1 !important;
+}
+
+#nav-bar
+{
+  order: 2 !important;
+}
+
+#PersonalToolbar
+{
+  order: 3 !important;
+}
+
+#alltabs-button,
+#customizableui-special-spring3,
+.tab-close-button,
+.close-icon,
+#tabbrowser-arrowscrollbox-periphery,
+.titlebar-buttonbox-container,
+/*titlebar-button titlebar-close*/
+#sidebar-button,
+#back-button,
+#forward-button,
+#stop-reload-button,
+#customizableui-special-spring1,
+#page-action-buttons,
+#customizableui-special-spring2,
+#fxa-toolbar-menu-button,
+#PersonalToolbar,
+#PanelUI-button,
+.searchmode-switcher
+/*.chromeclass-toolbar-additional*/
+{
+  display: none !important;
+}
+
+*
+{
+  border-radius: 0 !important;
+}
+
+/*#urlbar {
+  background: rgba(50, 50, 50, .2) !important;
+}*/
+
+#sidebar-container {
+  background: transparent !important;
+  width: 10% !important;
+  border-right: 1px dashed rgba(0, 0, 0, .3) !important;
+}
+
+#my-custom-widget {
+  position: absolute !important;
+  background: red !important;
+  width: 200px !important;
+  height: 30px !important;
+}
