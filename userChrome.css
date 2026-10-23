@@ -1,0 +1,55 @@
+#TabsToolbar
+{
+  order: 1 !important;
+}
+
+#nav-bar
+{
+  order: 2 !important;
+}
+
+#PersonalToolbar
+{
+  order: 3 !important;
+}
+
+#alltabs-button,
+#customizableui-special-spring3,
+.tab-close-button,
+.close-icon,
+#tabbrowser-arrowscrollbox-periphery,
+.titlebar-buttonbox-container,
+/*titlebar-button titlebar-close*/
+#sidebar-button,
+#back-button,
+#forward-button,
+#stop-reload-button,
+#customizableui-special-spring1,
+#page-action-buttons,
+#customizableui-special-spring2,
+#fxa-toolbar-menu-button,
+#PersonalToolbar,
+#PanelUI-button,
+.searchmode-switcher,
+#vertical-spacer
+/*.chromeclass-toolbar-additional*/
+{
+  display: none !important;
+}
+
+*
+{
+  border-radius: 0 !important;
+}
+
+#urlbar {
+  background: #ffffff !important;
+}
+
+#sidebar-container {
+  background: #ffffff !important;
+  max-width: 10% !important;
+  min-width: 48px !important;
+  /*min-width: 2.70% !important;*/
+  border-right: 1px dashed rgba(0, 0, 0, .6) !important;
+}

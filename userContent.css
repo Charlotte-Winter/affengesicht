@@ -1,0 +1,86 @@
+@-moz-document domain("aniworld.to") {
+  body {
+    background: #ffffff !important;
+  }
+}
+
+/*@-moz-document domain("youtube.com") {
+  #items,
+  #guide-button,
+  #search-button-narrow,
+  #voice-search-button,
+  #end,
+  #buttons,
+  #chips,
+  .ytSearchboxComponentSearchButton,
+  ytd-mini-guide-renderer {
+    display: none !important;
+    width: 0 !important;
+    min-width: 0 !important;
+    max-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  ytd-app[mini-guide-visible] #content,
+  #page-manager {
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+  }
+
+  .ytSearchboxComponentInputContainer,
+  .ytSearchboxComponentInputBox,
+  .ytSearchboxComponentInputWrapper,
+  .ytSearchboxComponentDesktop,
+  #center {
+    border: 0 !important;
+    align-self: center !important;
+    justify-self: center !important;
+    left: 0 !important;
+    border-radius: 0 !important;
+    margin-left: 0 !important;
+  }
+
+  input.ytSearchboxComponentInput,
+  .ytSearchboxComponentInput {
+    margin-left: 0  !important;
+  }
+
+  .ytSearchboxComponentInputBoxHasFocus,
+  .ytSearchboxComponentSearchForm,
+  .ytSearchboxComponentInputBox {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  #center {
+    margin-left: auto !important;
+    margin-right: auto !important;
+    overflow: hidden !important;
+    border: 3px dashed #ffc2f6 !important;
+  }
+
+  #interaction {
+    border: 3px dashed #ffc2f6 !important;
+  }
+
+  .yt-searchbox-filled-query {
+    border: red !important;
+  }
+
+  .ytSearchboxComponentInnerSearchIcon {
+    display: none !important;
+  }
+
+  #container {
+    justify-content: normal !important;
+  }
+
+  .ytSearchboxComponentSearchForm {
+
+  }
+
+  .yt-searchbox-input {
+    font-size: 30px !important;
+  }
+}
