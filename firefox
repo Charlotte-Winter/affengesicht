@@ -1,23 +1,38 @@
-// Erste Zeile muss ein Kommentar sein!
+// First line must be a comment
 try {
   let { Services } = Cu.import("resource://gre/modules/Services.jsm", {});
-  let windows = Services.wm.getEnumerator("navigator:browser");
-  
-  while (windows.hasMoreElements()) {
-    let win = windows.getNext();
-    win.addEventListener("load", () => {
-      let doc = win.document;
-      let navbar = doc.getElementById("nav-bar");
-      if (navbar && !doc.getElementById("navbar-clock")) {
-        let clock = doc.createElement("span");
-        clock.id = "navbar-clock";
-        
-        let updateTime = () => clock.textContent = new Date().toLocaleTimeString();
-        updateTime();
-        win.setInterval(updateTime, 1000);
-        
-        navbar.appendChild(clock);
-      }
-    }, { once: true });
-  }
-} catch (e) {}
+
+  Services.obs.addObserver({
+    observe: function(aSubject, aTopic, aData) {
+      let win = aSubject;
+      win.addEventListener("DOMContentLoaded", function() {
+        if (win.location.href === "chrome://browser/content/browser.xhtml") {
+          // Create the clock element
+          let clock = win.document.createElement("label");
+          clock.id = "custom-tabbar-clock";
+          clock.style.padding = "0 10px";
+          clock.style.alignSelf = "center";
+          clock.style.fontFamily = "monospace";
+          clock.style.fontSize = "12px";
+
+          // Place it in the tab bar
+          let tabBox = win.document.getElementById("TabsToolbar");
+          if (tabBox) {
+            tabBox.appendChild(clock);
+          }
+
+          // Update time every second
+          function updateClock() {
+            let now = new Date();
+            clock.value = now.toLocaleTimeString();
+          }
+
+          updateClock();
+          win.setInterval(updateClock, 1000);
+        }
+      }, { once: true });
+    }
+  }, "domwindowopened", false);
+} catch(e) {
+  // Silence errors on startup
+}
