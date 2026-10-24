@@ -1,7 +1,7 @@
 // First line must be a comment
 try {
   let { Services } = Cu.import("resource://gre/modules/Services.jsm", {});
-
+  
   Services.obs.addObserver({
     observe: function(aSubject, aTopic, aData) {
       let win = aSubject;
